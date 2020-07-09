@@ -1,8 +1,4 @@
 /**
- * Version mieux faites, BONUS : trouver une méthode pour pause ? Me semble compliqué de gérer le temps avec du setTimeout...
- */
-
-/**
  * VARIABLES DE NOTRE JEU, certaines pourraient être choisies par le joueur ?
  */
 
@@ -65,28 +61,25 @@ function getComputedStyleInt(element, property) {
 //fonction qui créé des positions aléatoires pour les ennemis avec des contraintes (while, if, for)
 function randomPosEnnemies() {
     const positions = [];
-    let i = 0;
     let x;
     let y;
-    while (i < nbEnnemies) {
+    while (positions.length < nbEnnemies) {
         //on  créé des valeurs aléatoires pour une position sur l'axe x et y qui ont des valeurs multiples de 50, soit la longueur et largeur de nos éléments, et qui sont adaptés à la taille de notre plateau de jeu
         x = Math.floor(Math.random() * 15) * 50;
         y = Math.floor(Math.random() * 15) * 50;
         //si ces valeurs ne sont pas trop proches du centre, soit la zone où se trouve notre personnage
         if (!(x >= 250 && x <= 450) && !(y >= 250 && y <= 450)) {
             let add = true;
-            for (let j = 0; j < positions.length; j++) {
+            for (let i = 0; i < positions.length; i++) {
                 //si cette position existe déjà dans notre tableau de positions, càd qu'un ennemi a déjà cette position
-                if (positions[j][0] === x && positions[j][1] === y) {
-                    //on empêvhe le fait de rajouter cette position dans notre tableau de position
+                if (positions[i][0] === x && positions[i][1] === y) {
+                    //on empêche le fait de rajouter cette position dans notre tableau de position
                     add = false;
                 }
             }
             //si on a respecté toutes les conditions ==> add = true
             if (add) {
-                positions[i] = [x, y];
-                //on incrémente notre boucle while
-                i++;
+                positions.push([x, y]);
             }
         }
     }
@@ -104,12 +97,9 @@ function createEnnemies() {
         gameBoard.appendChild(ennemies[i]);
     }
 }
-console.log(ennemies);
+
 //fonction pour afficher l'état du jeu (win or lose)
 function displayGameStatus(className, textToDisplay) {
-    // for (let i = 0; i < ennemies.length; i++) {
-    //     gameBoard.removeChild(ennemies[i]);
-    // }
     const text = document.createElement("h2");
     text.setAttribute("class", className);
     text.innerText = textToDisplay;
@@ -203,8 +193,6 @@ function createExplosion(bomb) {
     bomb.classList.remove("bomb");
     bomb.style.top = parseInt(bomb.style.top) - 50 + "px";
     bomb.style.left = parseInt(bomb.style.left) - 50 + "px";
-    // gameBoard.appendChild(explosion);
-    // gameBoard.removeChild(bomb);
     detectionExplosion(bomb);
 }
 
@@ -230,30 +218,27 @@ function move(element, direction) {
             if (topElement > 0) {
                 element.style.top = topElement - 50 + "px";
             }
-            detectionPlayerEnnemies();
             break;
 
         case "down":
             if (topElement < 700) {
                 element.style.top = topElement + 50 + "px";
             }
-            detectionPlayerEnnemies();
             break;
 
         case "left":
             if (leftElement > 0) {
                 element.style.left = leftElement - 50 + "px";
             }
-            detectionPlayerEnnemies();
             break;
 
         case "right":
             if (leftElement < 700) {
                 element.style.left = leftElement + 50 + "px";
             }
-            detectionPlayerEnnemies();
             break;
     }
+    detectionPlayerEnnemies();
 }
 
 
@@ -264,28 +249,17 @@ function move(element, direction) {
 //on check les interactions de notre utilisateur sur les touches prévues pour cela, encore un famoso addEventListener
 document.addEventListener("keydown", function (e) {
 
-    //Utiliser un switch ? Sans doute...
     if (e.key === "ArrowUp") {
         move(player, "up");
-    }
-
-    if (e.key === "ArrowDown") {
+    } else if (e.key === "ArrowDown") {
         move(player, "down");
-    }
-
-    if (e.key === "ArrowLeft") {
+    } else if (e.key === "ArrowLeft") {
         move(player, "left");
-    }
-
-    if (e.key === "ArrowRight") {
+    } else if (e.key === "ArrowRight") {
         move(player, "right");
-    }
-
-    if (e.key === " " && !endgame) {
+    } else if (e.key === " " && !endgame) {
         createBomb(getComputedStyleInt(player, "top"), getComputedStyleInt(player, "left"));
-    }
-
-    if (e.key === "0") {
+    } else if (e.key === "0") {
         //version lazy pour faire une nouvelle partie
         location.reload();
     }
